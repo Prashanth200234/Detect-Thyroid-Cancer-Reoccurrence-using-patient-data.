@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thyroid Cancer Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            width: 50%;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        label {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        select, input {
+            padding: 8px;
+            width: 50%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 50%;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+    <script>
+        async function predictCancer() {
+            const formData = {
+                Age: parseInt(document.getElementById("age").value, 10),
+                Gender: document.getElementById("gender").value,
+                Smoking: document.getElementById("smoking").value,
+                Hx_Smoking: document.getElementById("hx_smoking").value,
+                Hx_Radiotherapy: document.getElementById("hx_radiotherapy").value,
+                Thyroid_Function: document.getElementById("thyroid_function").value,
+                Physical_Examination: document.getElementById("physical_examination").value,
+                Adenopathy: document.getElementById("adenopathy").value,
+                Pathology: document.getElementById("pathology").value,
+                Focality: document.getElementById("focality").value,
+                Risk: document.getElementById("risk").value,
+                T: parseInt(document.getElementById("t").value, 10),
+                N: parseInt(document.getElementById("n").value, 10),
+                M: parseInt(document.getElementById("m").value, 10),
+                Stage: parseInt(document.getElementById("stage").value, 10),
+                Response: document.getElementById("response").value
+            };
+
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Server error: " + response.status);
+                }
+
+                const result = await response.json();
+                document.getElementById("result").innerText = "Prediction: " + result.prediction;
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("result").innerText = "Error fetching prediction. Try again.";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Thyroid Cancer Recurrence Prediction</h2>
+        <form onsubmit="event.preventDefault(); predictCancer();">
+            <label>Age: <input type="number" id="age" required></label>
+            
+            <label>Gender: 
+                <select id="gender" required>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </label>
+
+            <label>Smoking: 
+                <select id="smoking" required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </label>
+
+            <label>Hx Smoking: 
+                <select id="hx_smoking" required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </label>
+
+            <label>Hx Radiotherapy: 
+                <select id="hx_radiotherapy" required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </label>
+
+            <label>Thyroid Function: 
+                <select id="thyroid_function" required>
+                    <option value="Normal">Normal</option>
+                    <option value="Abnormal">Abnormal</option>
+                </select>
+            </label>
+
+            <label>Physical Examination: 
+                <select id="physical_examination" required>
+                    <option value="Normal">Normal</option>
+                    <option value="Abnormal">Abnormal</option>
+                </select>
+            </label>
+
+            <label>Adenopathy: 
+                <select id="adenopathy" required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </label>
+
+            <label>Pathology: 
+                <select id="pathology" required>
+                    <option value="Papillary">Papillary</option>
+                    <option value="Follicular">Follicular</option>
+                    <option value="Medullary">Medullary</option>
+                    <option value="Anaplastic">Anaplastic</option>
+                </select>
+            </label>
+
+            <label>Focality: 
+                <select id="focality" required>
+                    <option value="Unifocal">Unifocal</option>
+                    <option value="Multifocal">Multifocal</option>
+                </select>
+            </label>
+
+            <label>Risk: 
+                <select id="risk" required>
+                    <option value="Low">Low</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="High">High</option>
+                </select>
+            </label>
+
+            <label>T (Tumor Size): <input type="number" id="t" required></label>
+            <label>N (Lymph Nodes): <input type="number" id="n" required></label>
+            <label>M (Metastasis): <input type="number" id="m" required></label>
+            <label>Stage: <input type="number" id="stage" required></label>
+
+            <label>Response: 
+                <select id="response" required>
+                    <option value="Responsive">Responsive</option>
+                    <option value="Non-Responsive">Non-Responsive</option>
+                </select>
+            </label>
+
+            <button type="submit">Predict</button>
+        </form>
+        <p id="result"></p>
+    </div>
+</body>
+</html>
